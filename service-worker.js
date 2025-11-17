@@ -1,9 +1,12 @@
-const CACHE_NAME = 'delhibreathe-v1';
+const CACHE_NAME = 'delhibreathe-v2';
 const urlsToCache = [
   '/',
   '/index.html',
   '/app.js',
-  '/styles.css'
+  '/styles.css',
+  '/logo.webp',
+  '/icon-192.png',
+  '/icon-512.png'
 ];
 
 // Install service worker and cache assets

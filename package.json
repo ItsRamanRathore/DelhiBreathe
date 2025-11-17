@@ -7,10 +7,19 @@
     "dev": "vercel dev",
     "deploy": "vercel --prod"
   },
-  "keywords": ["esp32", "iot", "air-quality", "firebase", "vercel"],
+  "keywords": [
+    "esp32",
+    "iot",
+    "air-quality",
+    "firebase",
+    "vercel"
+  ],
   "author": "",
   "license": "MIT",
   "dependencies": {
     "firebase-admin": "^12.0.0"
+  },
+  "devDependencies": {
+    "sharp": "^0.34.5"
   }
 }
