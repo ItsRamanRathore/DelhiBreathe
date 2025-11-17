@@ -1,0 +1,7 @@
+<svg width="192" height="192" viewBox="0 0 192 192" xmlns="http://www.w3.org/2000/svg">
+  <rect width="192" height="192" fill="#0f172a"/>
+  <circle cx="96" cy="96" r="70" fill="none" stroke="#667eea" stroke-width="4"/>
+  <path d="M 50 96 Q 70 70 96 96 T 142 96" fill="none" stroke="#4facfe" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="96" cy="96" r="8" fill="#00d4aa"/>
+  <text x="96" y="150" text-anchor="middle" fill="#f1f5f9" font-family="Arial, sans-serif" font-size="24" font-weight="bold">AQI</text>
+</svg>

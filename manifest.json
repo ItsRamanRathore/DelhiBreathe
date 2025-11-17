@@ -1,0 +1,10 @@
+{
+  "name": "DelhiBreathe - Air Quality Monitor",
+  "short_name": "DelhiBreathe",
+  "description": "Real-time Air Quality Monitoring for Delhi",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#667eea",
+  "orientation": "portrait"
+}
