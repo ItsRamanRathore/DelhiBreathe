@@ -1,33 +1,26 @@
-# DelhiBreathe - Air Quality Monitoring System
+# DelhiBreathe - Air Quality Monitoring
 
-Real-time air quality monitoring website displaying ESP32 sensor data from Firebase with beautiful visualizations.
+Mobile-optimized air quality monitoring web app displaying ESP32 sensor data from Firebase.
 
 ## 🌟 Features
 
-- **Single-Page Website** with animations and particle effects
-- **Real-time Updates** via Firebase and WebSocket
-- **Air Quality Metrics**:
-  - AQI - large prominent display
-  - PM1, PM2.5, PM10 with health levels
-  - CO, SO₂, NO₂, VOC gas levels
-- **Mobile-friendly** compact design
+- Single-page mobile web app (Galaxy S24 optimized)
+- Real-time Firebase data updates
+- AQI, PM1/2.5/10, CO, SO₂, NO₂, VOC monitoring
+- Serverless deployment on Vercel
 
-## 🚀 Quick Start
+## 🚀 Deploy to Vercel
 
-```powershell
+1. Import repository to Vercel
+2. Add environment variable: `FIREBASE_CONFIG` (paste firebase-credentials.json content)
+3. Deploy
+
+## 🔧 Local Development
+
+```bash
 npm install
-npm start
+npx vercel dev
 ```
-
-Open `http://localhost:3000`
-
-## 🔧 Configuration
-
-**Firebase:** Place `firebase-credentials.json` in project root
-
-**Server:** Edit `USE_FIREBASE` in `server.js` (true/false for demo mode)
-
-**ESP32:** Configure WiFi and Firebase in `esp32_firebase.ino`
 
 ## 📡 Firebase Structure
 
@@ -47,18 +40,14 @@ Path: `/sensors/readings`
 }
 ```
 
-## 📊 Files
+## 📱 Files
 
-- `index.html` - Main website
-- `app.js` - Frontend logic
-- `styles.css` - Responsive styling
-- `server.js` - Backend server
-- `esp32_firebase.ino` - ESP32 code
+- `index.html` - Mobile web app
+- `app.js` - Frontend with polling
+- `styles.css` - Mobile-optimized styles
+- `api/latest.js` - Serverless API
+- `esp32_firebase.ino` - ESP32 sensor code
 
 ## 📄 License
 
-MIT License
-
----
-
-**Built for cleaner air monitoring**
+MIT

@@ -1,7 +1,5 @@
 // DelhiBreathe - Single Page Air Quality Monitor
 
-let socket;
-
 // Health levels configuration
 const pmLevels = {
     pm1: [
@@ -84,37 +82,32 @@ function createParticles() {
     }
 }
 
-// Initialize WebSocket connection
-function initWebSocket() {
+// Fetch data from API using polling
+function startPolling() {
+    // Initial fetch
+    fetchData();
+    
+    // Poll every 3 seconds
+    setInterval(fetchData, 3000);
+}
+
+async function fetchData() {
     try {
-        socket = new WebSocket('ws://localhost:3000');
-        
-        socket.onopen = () => {
-            console.log('WebSocket connected');
-            updateConnectionStatus(true);
-        };
-        
-        socket.onmessage = (event) => {
-            const data = JSON.parse(event.data);
+        const response = await fetch('/api/latest');
+        if (response.ok) {
+            const data = await response.json();
             updateDashboard(data);
-        };
-        
-        socket.onerror = (error) => {
-            console.error('WebSocket error:', error);
-            updateConnectionStatus(false);
-        };
-        
-        socket.onclose = () => {
-            console.log('WebSocket disconnected');
-            updateConnectionStatus(false);
-            setTimeout(initWebSocket, 3000);
-        };
+            updateConnectionStatus(true);
+        } else {
+            throw new Error('Failed to fetch data');
+        }
     } catch (error) {
-        console.error('Failed to create WebSocket:', error);
+        console.error('Error fetching data:', error);
         updateConnectionStatus(false);
-        startPolling();
     }
 }
+
+
 
 // Fallback: Poll API for data
 function startPolling() {
@@ -249,12 +242,6 @@ function updateGasValue(type, value) {
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
     createParticles();
-    initWebSocket();
-    
-    // Start with demo mode if server not available
-    setTimeout(() => {
-        if (!socket || socket.readyState !== WebSocket.OPEN) {
-            console.log('Server not available, will retry connection...');
-        }
-    }, 3000);
+    startPolling();
+    console.log('DelhiBreathe initialized');
 });
