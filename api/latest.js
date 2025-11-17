@@ -1,49 +1,60 @@
-const admin = require('firebase-admin');
+import admin from 'firebase-admin';
 
-// Initialize Firebase Admin only once
-if (!admin.apps.length) {
-    try {
-        let serviceAccount;
-        
-        // Try to get credentials from environment variable (for Vercel)
-        if (process.env.FIREBASE_CONFIG) {
-            serviceAccount = JSON.parse(process.env.FIREBASE_CONFIG);
-        } else {
-            // Fallback to local file (for local development)
-            serviceAccount = require('../firebase-credentials.json');
+// Initialize Firebase Admin
+let db;
+
+function initFirebase() {
+    if (!admin.apps.length) {
+        try {
+            let serviceAccount;
+            
+            if (process.env.FIREBASE_CONFIG) {
+                serviceAccount = JSON.parse(process.env.FIREBASE_CONFIG);
+            } else if (process.env.FIREBASE_PROJECT_ID) {
+                // Use individual environment variables
+                serviceAccount = {
+                    projectId: process.env.FIREBASE_PROJECT_ID,
+                    clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+                    privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n')
+                };
+            }
+            
+            admin.initializeApp({
+                credential: admin.credential.cert(serviceAccount),
+                databaseURL: "https://delhibreathe-default-rtdb.firebaseio.com"
+            });
+            
+            db = admin.database();
+        } catch (error) {
+            console.error('Firebase init error:', error);
         }
-        
-        admin.initializeApp({
-            credential: admin.credential.cert(serviceAccount),
-            databaseURL: "https://delhibreathe-default-rtdb.firebaseio.com"
-        });
-    } catch (error) {
-        console.error('Firebase initialization error:', error);
+    } else {
+        db = admin.database();
     }
 }
 
-const db = admin.database();
-
-module.exports = async (req, res) => {
-    // Enable CORS
-    res.setHeader('Access-Control-Allow-Credentials', true);
+export default async function handler(req, res) {
+    // CORS headers
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
     if (req.method === 'OPTIONS') {
-        res.status(200).end();
-        return;
+        return res.status(200).end();
     }
 
     try {
-        // Get latest sensor data from Firebase
+        initFirebase();
+        
+        if (!db) {
+            throw new Error('Firebase not initialized');
+        }
+
         const snapshot = await db.ref('sensors/readings').once('value');
         const data = snapshot.val();
 
         if (data) {
-            // Return the sensor data
-            res.status(200).json({
+            return res.status(200).json({
                 aqi: data.aqi || 0,
                 pm1: data.pm1 || 0,
                 pm25: data.pm25 || 0,
@@ -55,8 +66,8 @@ module.exports = async (req, res) => {
                 timestamp: data.timestamp || new Date().toISOString()
             });
         } else {
-            // Return demo data if no Firebase data
-            res.status(200).json({
+            // Demo data
+            return res.status(200).json({
                 aqi: 45,
                 pm1: 8.5,
                 pm25: 12.3,
@@ -69,10 +80,10 @@ module.exports = async (req, res) => {
             });
         }
     } catch (error) {
-        console.error('Error fetching data:', error);
-        res.status(500).json({ 
-            error: 'Failed to fetch sensor data',
+        console.error('Error:', error);
+        return res.status(500).json({ 
+            error: 'Failed to fetch data',
             message: error.message 
         });
     }
-};
+}
