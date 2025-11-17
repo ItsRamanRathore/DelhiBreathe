@@ -107,23 +107,6 @@ async function fetchData() {
     }
 }
 
-
-
-// Fallback: Poll API for data
-function startPolling() {
-    setInterval(async () => {
-        try {
-            const response = await fetch('http://localhost:3000/api/latest');
-            const data = await response.json();
-            updateDashboard(data);
-            updateConnectionStatus(true);
-        } catch (error) {
-            console.error('Polling error:', error);
-            updateConnectionStatus(false);
-        }
-    }, 2000);
-}
-
 // Update connection status
 function updateConnectionStatus(connected) {
     const indicator = document.getElementById('connectionStatus');
