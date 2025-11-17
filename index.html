@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0f172a">
+    <title>DelhiBreathe - Air Quality Monitor</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="particles" id="particles"></div>
+    
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <svg class="logo-icon" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="25" cy="25" r="20" stroke="currentColor" stroke-width="2" fill="none"/>
+                    <path d="M15 25 Q20 15, 25 25 T35 25" stroke="currentColor" stroke-width="2" fill="none"/>
+                </svg>
+                <span>DelhiBreathe</span>
+            </div>
+            <div class="connection-status">
+                <div class="status-indicator" id="connectionStatus"></div>
+                <span id="connectionText">Connecting...</span>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="container hero-container">
+            <div class="hero-header">
+                <h1 class="hero-title">
+                    Real-Time <span class="gradient-text">Air Quality</span> Monitor
+                </h1>
+                <p class="hero-subtitle">Live data from ESP32 IoT sensors</p>
+                <span class="last-update" id="lastUpdate">Last updated: --</span>
+            </div>
+
+            <!-- Main AQI Display -->
+            <div class="aqi-main-card">
+                <div class="aqi-main-header">
+                    <h2>Air Quality Index</h2>
+                </div>
+                <div class="aqi-main-value" id="mainAqi">--</div>
+                <div class="aqi-main-status" id="mainAqiStatus">Loading...</div>
+                <div class="aqi-bar">
+                    <div class="aqi-bar-fill" id="aqiBarFill"></div>
+                </div>
+                <div class="aqi-scale">
+                    <span>Good<br>0-50</span>
+                    <span>Moderate<br>51-100</span>
+                    <span>Unhealthy<br>101-150</span>
+                    <span>Very Unhealthy<br>151-200</span>
+                    <span>Hazardous<br>200+</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Particulate Matter Section -->
+    <section class="analytics-section">
+        <div class="container">
+            <h2 class="section-title">Particulate Matter Levels</h2>
+            <div class="pm-grid">
+                <div class="pm-card">
+                    <div class="pm-header">
+                        <h3>PM 1.0</h3>
+                        <svg class="pm-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="2"/>
+                            <circle cx="12" cy="12" r="6" opacity="0.5"/>
+                        </svg>
+                    </div>
+                    <div class="pm-value" id="pm1">--</div>
+                    <div class="pm-unit">µg/m³</div>
+                    <div class="pm-health-bar">
+                        <div class="pm-health-fill" id="pm1Fill"></div>
+                    </div>
+                    <div class="pm-health-status" id="pm1Status">Measuring...</div>
+                    <p class="pm-description">Fine particles that penetrate deep into lungs</p>
+                </div>
+
+                <div class="pm-card">
+                    <div class="pm-header">
+                        <h3>PM 2.5</h3>
+                        <svg class="pm-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"/>
+                            <circle cx="12" cy="12" r="7" opacity="0.5"/>
+                        </svg>
+                    </div>
+                    <div class="pm-value" id="pm25">--</div>
+                    <div class="pm-unit">µg/m³</div>
+                    <div class="pm-health-bar">
+                        <div class="pm-health-fill" id="pm25Fill"></div>
+                    </div>
+                    <div class="pm-health-status" id="pm25Status">Measuring...</div>
+                    <p class="pm-description">Particles that can enter bloodstream</p>
+                </div>
+
+                <div class="pm-card">
+                    <div class="pm-header">
+                        <h3>PM 10</h3>
+                        <svg class="pm-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="4"/>
+                            <circle cx="12" cy="12" r="9" opacity="0.5"/>
+                        </svg>
+                    </div>
+                    <div class="pm-value" id="pm10">--</div>
+                    <div class="pm-unit">µg/m³</div>
+                    <div class="pm-health-bar">
+                        <div class="pm-health-fill" id="pm10Fill"></div>
+                    </div>
+                    <div class="pm-health-status" id="pm10Status">Measuring...</div>
+                    <p class="pm-description">Inhalable particles affecting respiratory system</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gas Concentrations Section -->
+    <section class="analytics-section gas-section">
+        <div class="container">
+            <h2 class="section-title">Gas Concentrations</h2>
+            <div class="gas-grid">
+                <div class="gas-card">
+                    <div class="gas-icon-wrapper" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                            <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                            <line x1="12" y1="22.08" x2="12" y2="12"/>
+                        </svg>
+                    </div>
+                    <h3>Carbon Monoxide</h3>
+                    <div class="gas-value" id="co">--</div>
+                    <div class="gas-unit">ppm</div>
+                    <div class="gas-level-indicator">
+                        <div class="gas-level-bar" id="coBar"></div>
+                    </div>
+                    <div class="gas-status" id="coStatus">Reading...</div>
+                </div>
+
+                <div class="gas-card">
+                    <div class="gas-icon-wrapper" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 6v6l4 2"/>
+                        </svg>
+                    </div>
+                    <h3>Sulfur Dioxide</h3>
+                    <div class="gas-value" id="so2">--</div>
+                    <div class="gas-unit">ppb</div>
+                    <div class="gas-level-indicator">
+                        <div class="gas-level-bar" id="so2Bar"></div>
+                    </div>
+                    <div class="gas-status" id="so2Status">Reading...</div>
+                </div>
+
+                <div class="gas-card">
+                    <div class="gas-icon-wrapper" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                        </svg>
+                    </div>
+                    <h3>Nitrogen Dioxide</h3>
+                    <div class="gas-value" id="no2">--</div>
+                    <div class="gas-unit">ppb</div>
+                    <div class="gas-level-indicator">
+                        <div class="gas-level-bar" id="no2Bar"></div>
+                    </div>
+                    <div class="gas-status" id="no2Status">Reading...</div>
+                </div>
+
+                <div class="gas-card">
+                    <div class="gas-icon-wrapper" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                            <path d="M2 17l10 5 10-5M2 12l10 5 10-5"/>
+                        </svg>
+                    </div>
+                    <h3>VOC</h3>
+                    <div class="gas-value" id="voc">--</div>
+                    <div class="gas-unit">ppb</div>
+                    <div class="gas-level-indicator">
+                        <div class="gas-level-bar" id="vocBar"></div>
+                    </div>
+                    <div class="gas-status" id="vocStatus">Reading...</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 DelhiBreathe. Powered by ESP32 IoT Sensors.</p>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
